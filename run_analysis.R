@@ -7,29 +7,35 @@ test <- function() {
     rm(list = ls())
     gc()
     
-    #
+    # Define the working directory.
     setwd("~/Desktop/datasciencecoursera/Getting and Cleaning Data")
     
     #
     library(tidyverse)
     
-    #
+    # Assuming you unzipped the ZIP file in the same working directory,
+    # the dataset should all be contained in this directory.
     dataset_root_dir <- "UCI HAR Dataset"
     
-    #
+    # Define the names of the useful files within the primary directory.
+    # Namely, a file containing the activity that the y-data integers
+    # correspond to, and a list of features that the x-data vectors (should)
+    # correspond to.
     activity_labels_file <- "activity_labels.txt"
     features_file <- "features.txt"
     
-    #
+    # Define the names of the training / testing subdirectory.
     training_dir <- "train"
     testing_dir <- "test"
     
-    #
+    # Define the files within the training data subdirectory.
+    # I guess we're ignoring the inertial signals folder.
     training_subject_file <- "subject_train.txt"
     training_Y_file <- "y_train.txt"
     training_X_file <- "X_train.txt"
     
-    #
+    # Define the files within the test data subdirectory.
+    # I guess we're ignoring the inertial signals folder.
     testing_subject_file <- "subject_test.txt"
     testing_Y_file <- "y_test.txt"
     testing_X_file <- "X_test.txt"
