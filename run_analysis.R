@@ -45,9 +45,9 @@ test <- function() {
     features <- read.delim(file = paste(dataset_root_dir, features_file, sep = "/"), header = FALSE)
     
     # Read in the training data for X and Y. Also read in as factors.
-    #train_subject <- read.delim(file = paste(dataset_root_dir, training_dir, training_subject_file, sep = "/"), header = FALSE)
-    #train_Y <- read.delim(file = paste(dataset_root_dir, training_dir, training_Y_file, sep = "/"), header = FALSE)
-    #train_X <- read.delim(file = paste(dataset_root_dir, training_dir, training_X_file, sep = "/"), header = FALSE)
+    train_subjects <- read.delim(file = paste(dataset_root_dir, training_dir, training_subject_file, sep = "/"), header = FALSE)
+    train_ydata <- read.delim(file = paste(dataset_root_dir, training_dir, training_Y_file, sep = "/"), header = FALSE)
+    train_xdata <- read.delim(file = paste(dataset_root_dir, training_dir, training_X_file, sep = "/"), header = FALSE)
     
     # Read in the testing data for X and Y. Also read in as factors.
     # test_Y interestingly reads as a data frame, which is really convenient.
@@ -55,30 +55,49 @@ test <- function() {
     test_ydata <- read.delim(file = paste(dataset_root_dir, testing_dir, testing_Y_file, sep = "/"), header = FALSE)
     test_xdata <- read.delim(file = paste(dataset_root_dir, testing_dir, testing_X_file, sep = "/"), header = FALSE)
     
-    # Clean the activity labels. They should remain a factor, because they are categorical.
+    # Clean the activity labels. They should remain a factor, because they are categorical. Remove the old activity labels object.
     cleaned_activity_labels <- clean_activity_labels(activity_labels)
     rm(activity_labels)
     
-    # Clean the features. They should be a vector of characters, not factors.
+    # Clean the features. They should be a vector of characters, not factors. Remove the old features object.
     cleaned_features <- clean_features(features)
     rm(features)
     
-    # Call the tidy_dataset function, which tidies the train / test data set.
-    test_data1 <- tidy_dataset(test_subjects, cleaned_activity_labels, cleaned_features, test_ydata, test_xdata)
-    test_data2 <- tidy_dataset(test_subjects, cleaned_activity_labels, cleaned_features, test_ydata, test_xdata)
+    # Call the merge_objects_to_dataset function, which merges the testing data set and other objects. Finally, remove the testing objects.
+    test_dataset <- merge_objects_to_dataset(test_subjects, cleaned_activity_labels, cleaned_features, test_ydata, test_xdata)
+    rm(test_subjects)
+    rm(test_ydata)
+    rm(test_xdata)
+    
+    # Call the merge_objects_to_dataset function, which merges the training data set and other objects. Finally, remove the training objects.
+    train_dataset <- merge_objects_to_dataset(train_subjects, cleaned_activity_labels, cleaned_features, train_ydata, train_xdata)
+    rm(train_subjects)
+    rm(train_ydata)
+    rm(train_xdata)
     
     # Merge the tidied testing and training dataset into one. They should have the same column names.
-    # Use rbind to merge the testing and training dataset. Step 1 done, woo!
-    merged_dataset <- rbind(test_data1, test_data2)
-    
-    #
+    # Use rbind to merge the testing and training dataset. STEP 1 done, woo!
+    merged_dataset <- rbind(test_dataset, train_dataset)
 
+    # Filter the newly merged dataset and extract only the mean and standard deviation for each measurement.
+    # There isn't any more instructions, leaving the actual methodology up for interpretation, I guess.
+    # I interepreted this as extracting columns with the words "mean" or "std" in their column names.
+    # So much for STEP 2.
+    filtered_dataset <- filter_dataset(merged_dataset)
+    
+    # Create a new dataset from the earlier merged & filtered dataset. This function finds the averages of all
+    # measurements per subject and activity. This makes 180 rows (30 subjects x 6 activity categories),
+    # and 88 columns (number of columns with "mean" or "std" in the column name). STEP 4 is done!
+    tidied_dataset <- make_tidy_dataset(filtered_dataset)
+    
+    # Return the tidied dataset.
+    tidied_dataset
 }
 
 # This function generates a tidied data frame given the vector of subjects (N rows),
 # the activity labels, the vector features (561 long), the vector of "correct" activities (N rows),
 # and the vector of feature measurements (N rows, 1 very long character vector that should be 561 measurements).
-tidy_dataset <- function(subjects, activity_labels, features, ydata, xdata) {
+merge_objects_to_dataset <- function(subjects, activity_labels, features, ydata, xdata) {
     
     # Subject is imported as a data frame already, which is nice. We'll start with that.
     # Just add a helpful column name and we're done!
@@ -149,4 +168,57 @@ convert_activity_factors <- function(ydata, activity_labels) {
     # Save as a data frame that should be N rows long.
     as.data.frame(lapply(ydata, function(x) {activity_labels[x]}))
     
+}
+
+# This function extracts only the mean and standard deviation from the original dataset (but includes SUBJECT and ACTIVITY).
+# The phrase "extracts only the mean and standard deviation" leaves a lot of room for interpretation. I took the most
+# literal approach and retrieved only all columns containing "mean" or "std".
+filter_dataset <- function(dataset) {
+    
+    #
+    # Identify the column indexes of the original dataset whose names contain "mean" or "std".
+    indexes <- grep("mean|std", as.character(lapply(names(dataset), tolower)))
+    
+    # Column bind the first two columns of the original dataset (containing SUBJECT and ACTIVITY),
+    # and the dataset columns that contain either "mean" or "std" in their name.
+    cbind(dataset[, 1:2], dataset[, indexes])
+}
+
+#
+make_tidy_dataset <- function(dataset) {
+    
+    #
+    tidied_dataset <- data.frame(matrix(ncol = ncol(dataset), nrow = 0))
+    names(tidied_dataset) <- names(dataset)
+    
+    #
+    subjects <- sort(unique(dataset$SUBJECT))
+    activities <- as.character(sort(unique(dataset$ACTIVITY)))
+    
+    #
+    for (subject in subjects) {
+        
+        #
+        for (activity in activities) {
+            
+            #
+            temp_dataset <- subset(dataset, SUBJECT == subject & ACTIVITY == activity)
+            
+            # 
+            means <- unname(colMeans(temp_dataset[, 3:ncol(temp_dataset)]))
+
+            #
+            temp_row <- data.frame(subject, activity, t(data.frame(means)))
+            
+            #
+            rownames(temp_row) <- c()
+            names(temp_row) <- names(dataset)
+            
+            #
+            tidied_dataset <- rbind(tidied_dataset, temp_row)
+        }
+    }
+    
+    #
+    tidied_dataset
 }
