@@ -105,7 +105,9 @@ tBodyGyroJerkMean
 
 ## The Variables (Tidied Dataset)
 
-The tidied dataset is an aggregate of the test and training dataset, filtered by columns with "mean" or "std". For every test subject (30 of them) and activities those subjects performed (6 different categories), the mean of the various features were calculated. The result is 180 rows (30 subjects x 6 activities), and 88 columns (the number of columns with "mean" or "std"). All features whose means were calculated were prepended with "MEAN_OF_". Since they are averages, their units are the units of their parent variables - so please refer to the above section.
+The tidied dataset is an aggregate of the test and training dataset, filtered by columns with "mean" or "std". For every test subject (30 of them) and activities those subjects performed (6 different categories), the mean of the various features were calculated. The result is 180 rows (30 subjects x 6 activities), and 88 columns (the number of columns with "mean" or "std").
+
+All features whose means were calculated were prepended with "MEAN_OF_". Since they are averages, their units are the units of their parent variables - so please refer to the above section.
 
 SUBJECT: Integer, representing 1 of 30 test subjects.
 

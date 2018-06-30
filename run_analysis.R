@@ -18,8 +18,8 @@ main <- function() {
     rm(list = ls())
     gc()
 
-    # Define the output CSV file, that the tidied dataset will be saved as.
-    result_csv = "RESULT.csv"
+    # Define the output TXT file, that the tidied dataset will be saved as.
+    result_csv = "RESULT.txt"
     
     #
     #library(tidyverse)
@@ -107,8 +107,8 @@ main <- function() {
     # and 88 columns (number of columns with "mean" or "std" in the column name). STEP 4 is done!
     tidied_dataset <- make_tidy_dataset(filtered_dataset)
     
-    # Output the tidied dataset as a CSV file. STEP 5 is done!
-    write.csv(tidied_dataset, file = result_csv, row.names = FALSE)
+    # Output the tidied dataset as a TXT file. STEP 5 is done!
+    write.table(x = tidied_dataset, file = result_csv, row.names = FALSE)
 }
 
 # This function generates a tidied data frame given the vector of subjects (N rows),
