@@ -5,7 +5,7 @@ by Miguell M
 
 ## Introduction
 
-This is some helpful content
+This README will explain the nature of the data cleaning assignment, the purpose of the functions I wrote, and the steps I took to clean and process the dataset.
 
 
 ## The Assignment
@@ -40,21 +40,32 @@ The review criteria for the assignment is as follows from the Coursera website:
 
 ## The Dataset
 
-The dataset 
+The dataset for the assignment is UCI's Human Activity Recognition Using Smartphones Data Set from their Machien Learning Repository. It represents data collected from the accelerometer and gyroscope of a Samsung Galaxy SII as it is worn by test subjects performing a number of typical physical activities (standing, walking, laying, etc).
 
+For more detail on the dataset, go to: http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones
 
 
 ## run_analysis.R
 
 run_analysis.R is the only script I wrote, and has all the functions necessary to finish the assignment. Simply run:
 
-`
+```
 main()
-`
+```
 
 in the command line after sourcing the script, provided you have unzipped the UCI HAR Dataset directory in the same directory as run_analysis.R. The script will (should) proceed as expected, run through the steps of the assignment, produce a tidied dataset in the form of a CSV file, saved in the same working directory.
 
 
 ## The Methodology
+
+### Step 1
+
+What do I say about the methodology?
+
+### Step 2
+
+What do I say about the methodology?
+
+### Step 3
 
 What do I say about the methodology?
