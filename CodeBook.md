@@ -37,7 +37,7 @@ For this step, I simply used "activity_labels.txt" to get the activity names for
 
 ### Step 4: Appropriately labels the data set with descriptive variable names.
 
-For this step, I simply used "features.txt" to get the 561 feature names for the X_test.txt / X_train.txt columns. I applied this to my merged dataset, so all succeeding datasets have the same column names for the various measurements. I was hesitant to replace any characters because some column names used characters like commas as part of the column name (for example: fBodyAcc-bandsEnergy()-57,64), and replacing / removing the comma might impact the column names' meaning.
+For this step, I simply used "features.txt" to get the 561 feature names for the X_test.txt / X_train.txt columns. I applied this to my merged dataset, so all succeeding datasets have the same column names for the various measurements. I was hesitant to replace any characters because some column names used characters like commas as part of the column name (for example: fBodyAcc-bandsEnergy()-57,64), and replacing / removing the comma might impact the column names' meaning. All I did was prepend "MEAN_OF_" to the features to indicate that the values represented were aggregates from the earlier dataset.
 
 ### Step 5: From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 
