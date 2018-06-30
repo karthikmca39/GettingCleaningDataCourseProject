@@ -234,7 +234,9 @@ make_tidy_dataset <- function(dataset) {
             # Remove the row names of the temporary single row, and make the column names
             # identical to the tidied dataset.
             rownames(temp_row) <- c()
-            names(temp_row) <- names(dataset)
+            temp_rowname <- names(dataset)
+            temp_rowname[3:length(temp_rowname)] <- paste("MEAN_OF_", temp_rowname[3:length(temp_rowname)], sep = "")
+            names(temp_row) <- temp_rowname
             
             # Append the new row to the tidied data frame per iteration.
             # Understandably, this is pretty inefficient doing things in nested for loops.
