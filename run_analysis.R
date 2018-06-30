@@ -1,21 +1,38 @@
+# ------------------------------------------------------------------------------------------
 #
-test <- function() {
+#   Getting and Cleaning Data: Week 4 Course Project
+#
+#   by Miguell M
+#
+# ------------------------------------------------------------------------------------------
+
+# The main function of the script. Simply call main, which will go through all the 
+# steps of the course project (reading the files, merging data, filtering data, tidying data).
+# Just run main() in the command line, provided you have the UCI HAR Dataset directory and the
+# run_analysis.R script in the same working directory.
+main <- function() {
     
     # Remove objects from the workspace and garbage collect. Not sure if this is necessary.
     # I read that having unused objects impacts performance, since R stores objects in 
     # memory. Anyways, moving on!
     rm(list = ls())
     gc()
-    
-    # Define the working directory.
-    setwd("~/Desktop/datasciencecoursera/Getting and Cleaning Data")
+
+    # Define the output CSV file, that the tidied dataset will be saved as.
+    result_csv = "RESULT.csv"
     
     #
-    library(tidyverse)
+    #library(tidyverse)
     
     # Assuming you unzipped the ZIP file in the same working directory,
     # the dataset should all be contained in this directory.
     dataset_root_dir <- "UCI HAR Dataset"
+    if (!dir.exists(dataset_root_dir)) {
+        print("You should probably download the dataset first.")
+        print("When you do, unzip it and put it in a working directory.")
+        print("Make sure to put this script in the same directory!")
+        stop(paste(dataset_root_dir, "directory not found in working directory.", sep = " "))
+    }
     
     # Define the names of the useful files within the primary directory.
     # Namely, a file containing the activity that the y-data integers
@@ -90,8 +107,8 @@ test <- function() {
     # and 88 columns (number of columns with "mean" or "std" in the column name). STEP 4 is done!
     tidied_dataset <- make_tidy_dataset(filtered_dataset)
     
-    # Return the tidied dataset.
-    tidied_dataset
+    # Output the tidied dataset as a CSV file. STEP 5 is done!
+    write.csv(tidied_dataset, file = result_csv, row.names = FALSE)
 }
 
 # This function generates a tidied data frame given the vector of subjects (N rows),
@@ -184,41 +201,48 @@ filter_dataset <- function(dataset) {
     cbind(dataset[, 1:2], dataset[, indexes])
 }
 
-#
+# This function creates a new, tidy dataset from the merged and filtered (by "mean" / "std") dataset (88 columns).
+# The content of this dataset is the mean of all 88 measurements, per activity, per subject. 
+# This result is a data frame that is 180 rows (6 activities x 30 subjects) by 88 columns.
 make_tidy_dataset <- function(dataset) {
     
-    #
+    # Create an initially empty data frame, with the same columns as the filtered data frame.
     tidied_dataset <- data.frame(matrix(ncol = ncol(dataset), nrow = 0))
     names(tidied_dataset) <- names(dataset)
     
-    #
+    # Iterate through the 30 subjects and 6 activities (sorted).
     subjects <- sort(unique(dataset$SUBJECT))
     activities <- as.character(sort(unique(dataset$ACTIVITY)))
     
-    #
+    # Iterate through the 30 subjects in order.
     for (subject in subjects) {
         
-        #
+        # Iterate through the 6 activities in order.
         for (activity in activities) {
             
-            #
+            # Subset the data to get only the measurements for the particular subject and activity.
             temp_dataset <- subset(dataset, SUBJECT == subject & ACTIVITY == activity)
             
-            # 
+            # Use colMeans to get the mean of all the columns. Be careful not to get the colMeans of
+            # the SUBJECT and ACTIVITY column. Comes out as a data frame, which is convenient!
             means <- unname(colMeans(temp_dataset[, 3:ncol(temp_dataset)]))
 
-            #
+            # Create a single row with the subject, activity, and the means data frame. 
+            # We have to transpose the means to make it rowwise.
             temp_row <- data.frame(subject, activity, t(data.frame(means)))
             
-            #
+            # Remove the row names of the temporary single row, and make the column names
+            # identical to the tidied dataset.
             rownames(temp_row) <- c()
             names(temp_row) <- names(dataset)
             
-            #
+            # Append the new row to the tidied data frame per iteration.
+            # Understandably, this is pretty inefficient doing things in nested for loops.
+            # Anyone got a better idea?
             tidied_dataset <- rbind(tidied_dataset, temp_row)
         }
     }
     
-    #
+    # Return the tidied dataset!
     tidied_dataset
 }
