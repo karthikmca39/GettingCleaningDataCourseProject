@@ -5,7 +5,7 @@ by Miguell M
 
 ## Introduction
 
-This README will explain the nature of the data cleaning assignment, the purpose of the functions I wrote, and the steps I took to clean and process the dataset.
+This README will explain the nature of the data cleaning assignment and the steps I took to clean and process the dataset and fulfill the assignment requirements.
 
 
 ## The Assignment
